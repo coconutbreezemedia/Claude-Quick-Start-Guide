@@ -372,5 +372,103 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
+// ─── Theme Toggle ───
+const themeToggle = document.getElementById("themeToggle");
+const THEME_KEY = "claude-training-theme";
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
+  localStorage.setItem(THEME_KEY, theme);
+}
+
+function loadTheme() {
+  const saved = localStorage.getItem(THEME_KEY);
+  if (saved) {
+    applyTheme(saved);
+  }
+}
+
+themeToggle.addEventListener("click", () => {
+  const current = document.documentElement.getAttribute("data-theme");
+  applyTheme(current === "light" ? "dark" : "light");
+});
+
+loadTheme();
+
+// ─── Confetti ───
+function launchConfetti() {
+  const canvas = document.getElementById("confettiCanvas");
+  const ctx = canvas.getContext("2d");
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const colors = ["#d4a846", "#e8be5a", "#c55a3a", "#5a9a5c", "#5a8a9a", "#e8e4db", "#b8922e"];
+  const particles = [];
+  const PARTICLE_COUNT = 120;
+
+  for (let i = 0; i < PARTICLE_COUNT; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height * -1 - 20,
+      w: Math.random() * 8 + 4,
+      h: Math.random() * 4 + 2,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      vx: (Math.random() - 0.5) * 3,
+      vy: Math.random() * 3 + 2,
+      rotation: Math.random() * 360,
+      rotationSpeed: (Math.random() - 0.5) * 12,
+      opacity: 1,
+      delay: Math.random() * 600,
+    });
+  }
+
+  const start = performance.now();
+  const DURATION = 3500;
+
+  function animate(now) {
+    const elapsed = now - start;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    let active = false;
+    particles.forEach((p) => {
+      if (elapsed < p.delay) { active = true; return; }
+
+      p.x += p.vx;
+      p.vy += 0.06;
+      p.y += p.vy;
+      p.rotation += p.rotationSpeed;
+
+      if (elapsed > DURATION - 1000) {
+        p.opacity = Math.max(0, p.opacity - 0.02);
+      }
+
+      if (p.y < canvas.height + 20 && p.opacity > 0) {
+        active = true;
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate((p.rotation * Math.PI) / 180);
+        ctx.globalAlpha = p.opacity;
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        ctx.restore();
+      }
+    });
+
+    if (active && elapsed < DURATION + 500) {
+      requestAnimationFrame(animate);
+    } else {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+  }
+
+  requestAnimationFrame(animate);
+
+  window.addEventListener("resize", () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }, { once: true });
+}
+
 // ─── Init ───
 renderWeeks();
+launchConfetti();

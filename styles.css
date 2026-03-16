@@ -34,6 +34,58 @@
   --font-mono: 'IBM Plex Mono', 'SF Mono', monospace;
 }
 
+/* ─── Light Theme ─── */
+[data-theme="light"] {
+  --bg: #f4f1eb;
+  --bg-warm: #ece8e0;
+  --surface: #ffffff;
+  --surface-hover: #f8f6f2;
+  --surface-active: #f0ece5;
+  --border: #ddd8cf;
+  --border-light: #ccc7bc;
+  --border-accent: #b8a88e;
+  --text: #1a1816;
+  --text-dim: #5a5348;
+  --text-muted: #8a8279;
+  --amber: #b8872a;
+  --amber-bright: #d49a2e;
+  --amber-dim: #9a7424;
+  --amber-glow: rgba(184, 135, 42, 0.12);
+  --amber-glow-strong: rgba(184, 135, 42, 0.25);
+  --terracotta: #b04a2e;
+  --terracotta-dim: rgba(176, 74, 46, 0.1);
+  --green: #4a8a4c;
+  --green-bright: #5a9a5c;
+  --green-glow: rgba(74, 138, 76, 0.15);
+  --cyan: #4a7a8a;
+}
+
+[data-theme="light"] .grain {
+  opacity: 0.015;
+}
+
+[data-theme="light"] .grid-bg {
+  background-image:
+    linear-gradient(rgba(184, 135, 42, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(184, 135, 42, 0.05) 1px, transparent 1px);
+}
+
+[data-theme="light"] .gauge-track {
+  background: var(--bg-warm);
+}
+
+[data-theme="light"] .week-progress-bar {
+  background: var(--bg-warm);
+}
+
+[data-theme="light"] .activity-checkbox input:checked + .checkmark svg {
+  color: #fff;
+}
+
+[data-theme="light"] .gauge-glow {
+  background: linear-gradient(90deg, transparent, rgba(212, 154, 46, 0.3));
+}
+
 html {
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
@@ -202,6 +254,50 @@ body {
 
 .status-text.complete {
   color: var(--amber);
+}
+
+/* ─── Theme Toggle ─── */
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+
+.theme-toggle:hover {
+  border-color: var(--amber-dim);
+  color: var(--amber);
+  background: var(--amber-glow);
+}
+
+.theme-icon-light {
+  display: none;
+}
+
+[data-theme="light"] .theme-icon-dark {
+  display: none;
+}
+
+[data-theme="light"] .theme-icon-light {
+  display: block;
+}
+
+/* ─── Confetti Canvas ─── */
+#confettiCanvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 3000;
 }
 
 .reset-btn {
