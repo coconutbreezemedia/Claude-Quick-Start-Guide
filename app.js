@@ -6,7 +6,7 @@ const curriculum = [
     bloom: "Remember / Understand / Apply",
     days: [
       {
-        label: "Days 1\u20132: Installation & Authentication",
+        label: "Days 1–2: Installation & Authentication",
         activities: [
           { text: "Install Claude Code and authenticate", deliverable: false },
           { text: "Run first session, ask Claude to explain a project", deliverable: false },
@@ -14,7 +14,7 @@ const curriculum = [
         ],
       },
       {
-        label: "Days 3\u20134: Core Commands & Navigation",
+        label: "Days 3–4: Core Commands & Navigation",
         activities: [
           { text: "Create personal cheat sheet from /help", deliverable: false },
           { text: "Practice /clear, /model, /doctor", deliverable: false },
@@ -22,7 +22,7 @@ const curriculum = [
         ],
       },
       {
-        label: "Days 5\u20137: CLAUDE.md & First Real Tasks",
+        label: "Days 5–7: CLAUDE.md & First Real Tasks",
         activities: [
           { text: "Run /init and customize CLAUDE.md", deliverable: false },
           { text: "Write a utility function with Claude Code", deliverable: false },
@@ -39,7 +39,7 @@ const curriculum = [
     bloom: "Apply / Analyze",
     days: [
       {
-        label: "Days 8\u20139: Plan Mode Mastery",
+        label: "Days 8–9: Plan Mode Mastery",
         activities: [
           { text: "Complete a multi-file task using /plan", deliverable: false },
           { text: "Ask clarifying questions, modify plan before approving", deliverable: false },
@@ -47,7 +47,7 @@ const curriculum = [
         ],
       },
       {
-        label: "Days 10\u201311: Permissions & Safety",
+        label: "Days 10–11: Permissions & Safety",
         activities: [
           { text: "Test strict permission level", deliverable: false },
           { text: "Test moderate permission level", deliverable: false },
@@ -57,7 +57,7 @@ const curriculum = [
         ],
       },
       {
-        label: "Days 12\u201314: Git Integration & Context Management",
+        label: "Days 12–14: Git Integration & Context Management",
         activities: [
           { text: "Full Git workflow through Claude Code", deliverable: false },
           { text: "Practice /compact and context management", deliverable: false },
@@ -72,7 +72,7 @@ const curriculum = [
     bloom: "Apply / Analyze / Create",
     days: [
       {
-        label: "Days 15\u201316: Custom Skills & Slash Commands",
+        label: "Days 15–16: Custom Skills & Slash Commands",
         activities: [
           { text: "Create a /review custom command", deliverable: false },
           { text: "Create a testing skill", deliverable: false },
@@ -81,7 +81,7 @@ const curriculum = [
         ],
       },
       {
-        label: "Days 17\u201318: Hooks for Automation",
+        label: "Days 17–18: Hooks for Automation",
         activities: [
           { text: "Build a PostToolUse lint hook", deliverable: false },
           { text: "Build a PreToolUse safety hook", deliverable: false },
@@ -90,7 +90,7 @@ const curriculum = [
         ],
       },
       {
-        label: "Days 19\u201321: MCP Servers & Subagents",
+        label: "Days 19–21: MCP Servers & Subagents",
         activities: [
           { text: "Connect 2+ MCP servers", deliverable: false },
           { text: "Create a code-reviewer subagent", deliverable: false },
@@ -106,14 +106,14 @@ const curriculum = [
     bloom: "Analyze / Evaluate / Create",
     days: [
       {
-        label: "Days 22\u201323: Agent Teams",
+        label: "Days 22–23: Agent Teams",
         activities: [
-          { text: "Run a multi-agent task with lead + 2\u20133 teammates", deliverable: false },
+          { text: "Run a multi-agent task with lead + 2–3 teammates", deliverable: false },
           { text: "Agent Teams experiment documentation", deliverable: true },
         ],
       },
       {
-        label: "Days 24\u201325: Headless Mode & CI/CD",
+        label: "Days 24–25: Headless Mode & CI/CD",
         activities: [
           { text: "Write a JSON quality report script (headless)", deliverable: false },
           { text: "Write a test generation script (headless)", deliverable: false },
@@ -121,7 +121,7 @@ const curriculum = [
         ],
       },
       {
-        label: "Days 26\u201328: Capstone Project",
+        label: "Days 26–28: Capstone Project",
         activities: [
           { text: "Plan and build a full project using all Claude Code features", deliverable: false },
           { text: "Completed project + workflow document", deliverable: true },
@@ -176,7 +176,7 @@ function getWeekCounts(weekIdx, progress) {
   return { total, completed };
 }
 
-// ─── Render ───
+// ─── DOM Refs ───
 const weeksContainer = document.getElementById("weeksContainer");
 const healthBarFill = document.getElementById("healthBarFill");
 const healthPercent = document.getElementById("healthPercent");
@@ -186,10 +186,13 @@ const resetBtn = document.getElementById("resetBtn");
 const modalOverlay = document.getElementById("modalOverlay");
 const modalCancel = document.getElementById("modalCancel");
 const modalConfirm = document.getElementById("modalConfirm");
+const statusDot = document.getElementById("statusDot");
+const statusText = document.getElementById("statusText");
 
 let progress = loadProgress();
-let openWeeks = new Set([0]); // Week 1 open by default
+let openWeeks = new Set([0]);
 
+// ─── Render ───
 function renderWeeks() {
   weeksContainer.innerHTML = "";
 
@@ -197,16 +200,15 @@ function renderWeeks() {
     const { total, completed } = getWeekCounts(wi, progress);
     const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
     const isOpen = openWeeks.has(wi);
+    const isComplete = completed === total;
 
     const card = document.createElement("div");
-    card.className = `week-card${isOpen ? " open" : ""}`;
+    card.className = `week-card${isOpen ? " open" : ""}${isComplete ? " week-complete" : ""}`;
 
     card.innerHTML = `
       <div class="week-header" data-week="${wi}">
-        <svg class="week-chevron" viewBox="0 0 20 20" fill="none">
-          <path d="M7 5l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <span class="week-number">WEEK ${week.week}</span>
+        <div class="week-indicator"></div>
+        <span class="week-tag">WK ${week.week}</span>
         <div class="week-info">
           <div class="week-title">${week.title}</div>
           <div class="week-bloom">${week.bloom}</div>
@@ -217,6 +219,9 @@ function renderWeeks() {
           </div>
           <span class="week-progress-text">${pct}%</span>
         </div>
+        <svg class="week-chevron" viewBox="0 0 20 20" fill="none">
+          <path d="M7 5l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
       </div>
       <div class="week-body">
         <div class="week-content">
@@ -242,7 +247,7 @@ function renderWeeks() {
                     </div>
                     <div class="activity-content">
                       <span class="activity-text">${act.text}</span>
-                      ${act.deliverable ? '<span class="activity-tag deliverable">Deliverable</span>' : ""}
+                      ${act.deliverable ? '<span class="activity-tag deliverable">DELIVERABLE</span>' : ""}
                     </div>
                   </label>`;
                 })
@@ -278,13 +283,14 @@ function renderWeeks() {
       progress[id] = cb.checked;
       saveProgress(progress);
       updateHealthBar();
-      // Update the parent label class
+
       const label = cb.closest(".activity");
       if (cb.checked) {
         label.classList.add("completed");
       } else {
         label.classList.remove("completed");
       }
+
       // Update week progress
       const weekCard = cb.closest(".week-card");
       const wi = parseInt(weekCard.querySelector(".week-header").dataset.week, 10);
@@ -292,6 +298,13 @@ function renderWeeks() {
       const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
       weekCard.querySelector(".week-progress-fill").style.width = `${pct}%`;
       weekCard.querySelector(".week-progress-text").textContent = `${pct}%`;
+
+      // Update week completion state
+      if (completed === total) {
+        weekCard.classList.add("week-complete");
+      } else {
+        weekCard.classList.remove("week-complete");
+      }
     });
   });
 
@@ -304,18 +317,30 @@ function updateHealthBar() {
   const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
 
   healthBarFill.style.width = `${pct}%`;
-  healthPercent.textContent = `${pct}%`;
+  healthPercent.textContent = pct;
   completedCount.textContent = completed;
   totalCount.textContent = total;
 
-  // Color class
-  healthBarFill.classList.remove("low", "mid", "high");
-  if (pct < 35) {
-    healthBarFill.classList.add("low");
-  } else if (pct < 70) {
-    healthBarFill.classList.add("mid");
+  // Gauge completion glow
+  if (pct === 100) {
+    healthBarFill.classList.add("complete");
   } else {
-    healthBarFill.classList.add("high");
+    healthBarFill.classList.remove("complete");
+  }
+
+  // Status indicator
+  if (pct === 0) {
+    statusDot.className = "status-dot";
+    statusText.className = "status-text";
+    statusText.textContent = "STANDBY";
+  } else if (pct === 100) {
+    statusDot.className = "status-dot complete";
+    statusText.className = "status-text complete";
+    statusText.textContent = "MISSION COMPLETE";
+  } else {
+    statusDot.className = "status-dot active";
+    statusText.className = "status-text active";
+    statusText.textContent = "IN PROGRESS";
   }
 }
 
@@ -341,7 +366,6 @@ modalConfirm.addEventListener("click", () => {
   renderWeeks();
 });
 
-// Close modal on Escape
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && modalOverlay.classList.contains("visible")) {
     modalOverlay.classList.remove("visible");
